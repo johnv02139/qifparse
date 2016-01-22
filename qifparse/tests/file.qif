@@ -1,5 +1,5 @@
 !Type:Tag
-NMoving Expenses
+NSandwiches
 ^
 !Type:Cat
 Nfood
@@ -15,7 +15,7 @@ TCash
 !Type:Cash
 D23/10/2013
 T-6.50
-Lfood:lunch
+Lfood:lunch/Sandwiches
 ^
 D11/10/2013
 T31.00
