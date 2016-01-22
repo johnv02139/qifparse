@@ -111,7 +111,7 @@ class Qif(object):
             return tuple(self._transactions.values())
         else:
             tr = []
-            tr.extend(self._transactions.values)
+            tr.extend(self._transactions.values())
             for acc in self._accounts:
                 tr.extend(acc.transactions)
 
