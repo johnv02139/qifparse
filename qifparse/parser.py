@@ -54,7 +54,7 @@ class QifParser(object):
         for chunk in chunks:
             if not chunk:
                 continue
-            first_line = chunk.split('\n')[0]
+            first_line = chunk.split('\n')[0].strip()
             if first_line == '!Type:Cat':
                 last_type = 'category'
             elif first_line == '!Account':
