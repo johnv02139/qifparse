@@ -14,6 +14,8 @@ Even if the qif format is:
 
 it's still quite commonly used by many personal finance managers.
 
+It is also the only export format supported by many (older) versions of Quicken.
+
 
 Usage
 ======
@@ -24,11 +26,11 @@ Here's a sample parsing::
    >>> qif = QifParser.parse(file('file.qif'))
    >>> qif.get_accounts()
    (<qifparse.qif.Account object at 0x16148d0>, <qifparse.qif.Account object at 0x1614850>)
-   >>> qif.accounts[0].name
+   >>> qif.get_accounts()[0].name
    'My Cash'
    >>> qif.get_categories()
    (<qifparse.qif.Category object at 0x15b3d10>, <qifparse.qif.Category object at 0x15b3450>)
-   >>> qif.accounts[0].get_transactions()
+   >>> qif.get_accounts()[0].get_transactions()
    (<Transaction units=-6.5>, <Transaction units=-6.0>)
    >>> str(qif)
    '!Type:Cat\nNfood\nE\n^\nNfood:lunch\nE\n^\n!Account\nNMy Cash\nTCash\n^\n!Type:Cash...
@@ -54,9 +56,10 @@ Here's a sample of a structure creation::
    '!Type:Cat\nNfood\nE\n^\n!Account\nNMy Cc\nTBank\n^\n!Type:Bank\nD02/11/2013\nT...
    ...
 
-More infos
-============
-For more informations about qif format:
+More info
+=========
+For more information about the qif format:
 
 * http://en.wikipedia.org/wiki/Quicken_Interchange_Format
 * http://svn.gnucash.org/trac/browser/gnucash/trunk/src/import-export/qif-import/file-format.txt
+* http://www.respmech.com/mym2qifw/qif_new.htm
