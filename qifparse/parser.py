@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import six
 from datetime import datetime
+from decimal import Decimal
 from qifparse.qif import (
     Transaction,
     MemorizedTransaction,
@@ -29,6 +30,8 @@ class QifParserException(Exception):
 
 class QifParser(object):
 
+    date_format = None
+
     @classmethod
     def parse(cls_, file_handle, date_format=None):
         if isinstance(file_handle, type('')):
@@ -37,6 +40,7 @@ class QifParser(object):
         data = file_handle.read()
         if len(data) == 0:
             raise QifParserException('Data is empty')
+        cls_.date_format = date_format
         qif_obj = Qif()
         chunks = data.split('\n^\n')
         last_type = None
@@ -180,20 +184,18 @@ class QifParser(object):
         return curItem
 
     @classmethod
-    def parseMemorizedTransaction(cls_, chunk, date_format=None):
+    def parseMemorizedTransaction(cls_, chunk):
         """
         """
 
         curItem = MemorizedTransaction()
-        if date_format:
-            curItem.date_format = date_format
         lines = chunk.split('\n')
         for line in lines:
             if not len(line) or line[0] == '\n' or \
                     line.startswith('!Type:Memorized'):
                 continue
             elif line[0] == 'T':
-                curItem.amount = float(line[1:])
+                curItem.amount = cls_.parseFloat(line[1:])
             elif line[0] == 'C':
                 curItem.cleared = line[1:]
             elif line[0] == 'P':
@@ -230,20 +232,18 @@ class QifParser(object):
                 split.address.append(line[1:])
             elif line[0] == '$':
                 split = curItem.splits[-1]
-                split.amount = float(line[1:-1])
+                split.amount = cls_.parseFloat(line[1:-1])
             else:
                 # don't recognise this line; ignore it
                 print ("Skipping unknown line:\n" + str(line))
         return curItem
 
     @classmethod
-    def parseTransaction(cls_, chunk, date_format=None):
+    def parseTransaction(cls_, chunk):
         """
         """
 
         curItem = Transaction()
-        if date_format:
-            curItem.date_format = date_format
         lines = chunk.split('\n')
         for line in lines:
             if not len(line) or line[0] == '\n' or line.startswith('!Type'):
@@ -253,7 +253,7 @@ class QifParser(object):
             elif line[0] == 'N':
                 curItem.num = line[1:]
             elif line[0] == 'T':
-                curItem.amount = float(line[1:])
+                curItem.amount = cls_.parseFloat(line[1:])
             elif line[0] == 'C':
                 curItem.cleared = line[1:]
             elif line[0] == 'P':
@@ -302,20 +302,18 @@ class QifParser(object):
                 split.address.append(line[1:])
             elif line[0] == '$':
                 split = curItem.splits[-1]
-                split.amount = float(line[1:-1])
+                split.amount = cls_.parseFloat(line[1:-1])
             else:
                 # don't recognise this line; ignore it
                 print ("Skipping unknown line:\n" + str(line))
         return curItem
 
     @classmethod
-    def parseInvestment(cls_, chunk, date_format=None):
+    def parseInvestment(cls_, chunk):
         """
         """
 
         curItem = Investment()
-        if date_format:
-            curItem.date_format = date_format
         lines = chunk.split('\n')
         for line in lines:
             if not len(line) or line[0] == '\n' or line.startswith('!Type'):
@@ -323,15 +321,15 @@ class QifParser(object):
             elif line[0] == 'D':
                 curItem.date = cls_.parseQifDateTime(line[1:])
             elif line[0] == 'T':
-                curItem.amount = float(line[1:])
+                curItem.amount = cls_.parseFloat(line[1:])
             elif line[0] == 'N':
                 curItem.action = line[1:]
             elif line[0] == 'Y':
                 curItem.security = line[1:]
             elif line[0] == 'I':
-                curItem.price = float(line[1:])
+                curItem.price = cls_.parseFloat(line[1:])
             elif line[0] == 'Q':
-                curItem.quantity = float(line[1:])
+                curItem.quantity = cls_.parseFloat(line[1:])
             elif line[0] == 'C':
                 curItem.cleared = line[1:]
             elif line[0] == 'M':
@@ -341,10 +339,30 @@ class QifParser(object):
             elif line[0] == 'L':
                 curItem.to_account = line[2:-1]
             elif line[0] == '$':
-                curItem.amount_transfer = float(line[1:])
+                curItem.amount_transfer = cls_.parseFloat(line[1:])
             elif line[0] == 'O':
-                curItem.commission = float(line[1:])
+                curItem.commission = cls_.parseFloat(line[1:])
         return curItem
+
+    @classmethod
+    def parseFloat(cls_, chunk):
+        """convert from QIF float format to a quantity
+
+        To avoid rounding errors, use a Decimal class rather than float.
+        Sometimes the QIF file will contain an amount that is formatted
+        with a separator, e.g., "1,234.00".  Removing commas is a quick-
+        and-dirty way to parse such strings.
+
+        Note that many countries in the world use a decimal comma and a
+        dot separator, e.g., "1.234,00".  I don't know what Quicken does
+        with the separator, but it does seem to standardize on the dot
+        even in locales that normally use a comma, so it's possible this
+        might work.
+
+        I'd need help testing this using QIF files from other locales.
+        I don't have access to any.
+        """
+        return Decimal(chunk.replace(',', ''))
 
     @classmethod
     def parseQifDateTime(cls_, qdate):
@@ -355,6 +373,11 @@ class QifParser(object):
              or, (Paypal 2011) like "3/2/2011".
         ISO is like   YYYY-MM-DD  I think @@check
         """
+
+        if cls_.date_format:
+            return datetime.strptime(qdate, cls_.date_format)
+
+        # If date_format is not given explicitly, we will try to guess...
         if qdate[1] == "/":
             qdate = "0" + qdate   # Extend month to 2 digits
         if qdate[4] == "/":
