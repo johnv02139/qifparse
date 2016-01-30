@@ -2,6 +2,8 @@
 import unittest
 from qifparse import qif
 
+# This file tests some of the infrastructure functionality, without using any
+# QIF file at all.
 
 class TestCreateQIF(unittest.TestCase):
 
