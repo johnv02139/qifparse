@@ -200,9 +200,10 @@ class Transaction(BaseEntry):
     _sub_entry = True
     _fields = [
         Field('date', 'datetime', 'D', required=True, default=datetime.now()),
-        Field('num', 'string', 'N'),
+        Field('uamount', 'float', 'U'),
         Field('amount', 'float', 'T', required=True),
         Field('cleared', 'string', 'C'),
+        Field('num', 'string', 'N'),
         Field('payee', 'string', 'P'),
         Field('memo', 'string', 'M'),
         Field('address', 'multilinestring', 'A'),
