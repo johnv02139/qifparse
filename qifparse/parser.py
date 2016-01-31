@@ -54,6 +54,15 @@ class QifParser(object):
         last_type = None
         last_account = None
         transactions_header = None
+        for chunk in chunks:
+            if chunk:
+                (last_type, transactions_header, last_account) \
+                    = cls_.parseChunk(chunk, last_type,
+                                      transactions_header, last_account)
+        return cls_.qif_obj
+
+    @classmethod
+    def parseChunk(cls_, chunk, last_type, transactions_header, last_account):
         parsers = {
             'category': cls_.parseCategory,
             'account': cls_.parseAccount,
@@ -63,52 +72,49 @@ class QifParser(object):
             'tag': cls_.parseTag,
             'memorized': cls_.parseMemorizedTransaction
         }
-        for chunk in chunks:
-            if not chunk:
-                continue
-            first_line = chunk.splitlines()[0].strip()
-            if first_line == TYPE_HEADER + 'Cat':
-                last_type = 'category'
-            elif first_line == '!Account':
-                last_type = 'account'
-            elif first_line in NON_INVST_ACCOUNT_TYPES:
-                last_type = 'transaction'
-                transactions_header = first_line
-            elif first_line == TYPE_HEADER + 'Invst':
-                last_type = 'investment'
-                transactions_header = first_line
-            elif first_line == TYPE_HEADER + 'Class':
-                last_type = 'class'
-            elif first_line == TYPE_HEADER + 'Memorized':
-                last_type = 'memorized'
-                transactions_header = first_line
-            elif first_line == TYPE_HEADER + 'Tag':
-                last_type = 'tag'
-            elif chunk.startswith('!'):
-                raise QifParserException('Header not reconized')
-            # if no header is recognized then
-            # we use the previous one
-            item = parsers[last_type](chunk)
-            if last_type == 'account':
-                cls_.qif_obj.add_account(item)
-                last_account = item
-            elif last_type == 'memorized':
-                last_account = None
-                cls_.qif_obj.add_transaction(item, header=transactions_header)
-            elif last_type == 'transaction' or last_type == 'investment':
-                if last_account:
-                    last_account.add_transaction(item,
-                                                 header=transactions_header)
-                else:
-                    cls_.qif_obj.add_transaction(item,
-                                            header=transactions_header)
-            elif last_type == 'category':
-                cls_.qif_obj.add_category(item)
-            elif last_type == 'class':
-                cls_.qif_obj.add_class(item)
-            elif last_type == 'tag':
-                cls_.qif_obj.add_tag(item)
-        return cls_.qif_obj
+        first_line = chunk.splitlines()[0].strip()
+        if first_line == TYPE_HEADER + 'Cat':
+            last_type = 'category'
+        elif first_line == '!Account':
+            last_type = 'account'
+        elif first_line in NON_INVST_ACCOUNT_TYPES:
+            last_type = 'transaction'
+            transactions_header = first_line
+        elif first_line == TYPE_HEADER + 'Invst':
+            last_type = 'investment'
+            transactions_header = first_line
+        elif first_line == TYPE_HEADER + 'Class':
+            last_type = 'class'
+        elif first_line == TYPE_HEADER + 'Memorized':
+            last_type = 'memorized'
+            transactions_header = first_line
+        elif first_line == TYPE_HEADER + 'Tag':
+            last_type = 'tag'
+        elif chunk.startswith('!'):
+            raise QifParserException('Header not reconized')
+        # if no header is recognized then
+        # we use the previous one
+        item = parsers[last_type](chunk)
+        if last_type == 'account':
+            cls_.qif_obj.add_account(item)
+            last_account = item
+        elif last_type == 'memorized':
+            last_account = None
+            cls_.qif_obj.add_transaction(item, header=transactions_header)
+        elif last_type == 'transaction' or last_type == 'investment':
+            if last_account:
+                last_account.add_transaction(item,
+                                             header=transactions_header)
+            else:
+                cls_.qif_obj.add_transaction(item,
+                                             header=transactions_header)
+        elif last_type == 'category':
+            cls_.qif_obj.add_category(item)
+        elif last_type == 'class':
+            cls_.qif_obj.add_class(item)
+        elif last_type == 'tag':
+            cls_.qif_obj.add_tag(item)
+        return (last_type, transactions_header, last_account)
 
     @classmethod
     def parseClass(cls_, chunk):
