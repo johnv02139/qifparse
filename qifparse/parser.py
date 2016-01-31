@@ -221,6 +221,8 @@ class QifParser(object):
         """
 
         curItem = MemorizedTransaction()
+        if cls_.date_format:
+            curItem.date_format = cls_.date_format
         lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or \
@@ -284,6 +286,8 @@ class QifParser(object):
         """
 
         curItem = Transaction()
+        if cls_.date_format:
+            curItem.date_format = cls_.date_format
         lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or line.startswith(TYPE_HEADER):
@@ -356,6 +360,8 @@ class QifParser(object):
         """
 
         curItem = Investment()
+        if cls_.date_format:
+            curItem.date_format = cls_.date_format
         lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or line.startswith(TYPE_HEADER):

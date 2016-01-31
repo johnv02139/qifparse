@@ -5,6 +5,7 @@ from qifparse.parser import QifParser
 
 filename = os.path.join(os.path.dirname(__file__), 'file.qif')
 filename2 = os.path.join(os.path.dirname(__file__), 'transactions_only.qif')
+filename3 = os.path.join(os.path.dirname(__file__), 'usw.qif')
 
 def stripAllLines(txt):
     return "\n".join(map(lambda x:x.strip(), txt.splitlines())) + "\n"
@@ -45,7 +46,13 @@ class TestQIFParsing(unittest.TestCase):
 #        out.close()
         self.assertEquals(stripped, str(qif))
 
-    def testParseTransactionsFile(self):
+    def testWriteWindowsUsaFile(self):
+        data = open(filename3, 'U').read()
+        qif = QifParser.parse(open(filename3, 'U'), '%m/%d/%Y')
+        stripped = stripAllLines(data)
+        self.assertEquals(stripped, str(qif))
+
+    def testWriteTransactionsFile(self):
         data = open(filename2, 'U').read()
         qif = QifParser.parse(open(filename2, 'U'), '%d/%m/%Y')
         stripped = stripAllLines(data)
