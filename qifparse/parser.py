@@ -233,11 +233,17 @@ class QifParser(object):
                     split.address = []
                 split.address.append(line[1:])
             elif line[0] == '$':
-                split = curItem.splits[-1]
-                split.amount = cls_.parseFloat(line[1:-1])
+                amt = cls_.parseFloat(line[1:-1])
+                if amt:
+                    if curItem.splits:
+                        split = curItem.splits[-1]
+                        split.amount = amt
+                    else:
+                        raise QifParserException('no split found')
             else:
-                # don't recognise this line; ignore it
-                print ("Skipping unknown line:\n" + str(line))
+                # don't recognize this line; ignore it
+                print ("Skipping unknown line of memorized transaction:\n" +
+                       str(line))
         return curItem
 
     @classmethod
@@ -308,8 +314,8 @@ class QifParser(object):
                 split = curItem.splits[-1]
                 split.amount = cls_.parseFloat(line[1:-1])
             else:
-                # don't recognise this line; ignore it
-                print ("Skipping unknown line:\n" + str(line))
+                # don't recognize this line; ignore it
+                print ("Skipping unknown line of transaction:\n" + str(line))
         return curItem
 
     @classmethod
@@ -385,7 +391,7 @@ class QifParser(object):
         if qdate[1] == "/":
             qdate = "0" + qdate   # Extend month to 2 digits
         if qdate[4] == "/":
-            qdate = qdate[:3]+"0" + qdate[3:]   # Extend month to 2 digits
+            qdate = qdate[:3]+"0" + qdate[3:]  # Extend month to 2 digits
         for i in range(len(qdate)):
             if qdate[i] == " ":
                 qdate = qdate[:i] + "0" + qdate[i+1:]
