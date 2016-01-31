@@ -209,6 +209,8 @@ class QifParser(object):
                 curItem.balance_date = cls_.parseQifDateTime(line[1:])
             elif line[0] == '$':
                 curItem.balance_amount = line[1:]
+            elif line == '!Clear:AutoSwitch' or line == '!Option:AutoSwitch':
+                pass
             else:
                 print('Line not recognized: ' + line)
         return curItem
