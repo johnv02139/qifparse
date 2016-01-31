@@ -14,13 +14,15 @@ from qifparse.qif import (
     Qif,
 )
 
+TYPE_HEADER = '!Type:'
+
 NON_INVST_ACCOUNT_TYPES = [
-    '!Type:Cash',
-    '!Type:Bank',
-    '!Type:Ccard',
-    '!Type:Oth A',
-    '!Type:Oth L',
-    '!Type:Invoice',  # Quicken for business only
+    TYPE_HEADER + 'Cash',
+    TYPE_HEADER + 'Bank',
+    TYPE_HEADER + 'Ccard',
+    TYPE_HEADER + 'Oth A',
+    TYPE_HEADER + 'Oth L',
+    TYPE_HEADER + 'Invoice',  # Quicken for business only
 ]
 
 
@@ -59,22 +61,22 @@ class QifParser(object):
             if not chunk:
                 continue
             first_line = chunk.splitlines()[0].strip()
-            if first_line == '!Type:Cat':
+            if first_line == TYPE_HEADER + 'Cat':
                 last_type = 'category'
             elif first_line == '!Account':
                 last_type = 'account'
             elif first_line in NON_INVST_ACCOUNT_TYPES:
                 last_type = 'transaction'
                 transactions_header = first_line
-            elif first_line == '!Type:Invst':
+            elif first_line == TYPE_HEADER + 'Invst':
                 last_type = 'investment'
                 transactions_header = first_line
-            elif first_line == '!Type:Class':
+            elif first_line == TYPE_HEADER + 'Class':
                 last_type = 'class'
-            elif first_line == '!Type:Memorized':
+            elif first_line == TYPE_HEADER + 'Memorized':
                 last_type = 'memorized'
                 transactions_header = first_line
-            elif first_line == '!Type:Tag':
+            elif first_line == TYPE_HEADER + 'Tag':
                 last_type = 'tag'
             elif chunk.startswith('!'):
                 raise QifParserException('Header not reconized')
@@ -108,7 +110,7 @@ class QifParser(object):
         lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or \
-                    line.startswith('!Type:Class'):
+                    line.startswith(TYPE_HEADER + 'Class'):
                 continue
             elif line[0] == 'N':
                 curItem.name = line[1:]
@@ -124,7 +126,7 @@ class QifParser(object):
         lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or \
-                    line.startswith('!Type:Tag'):
+                    line.startswith(TYPE_HEADER + 'Tag'):
                 continue
             elif line[0] == 'N':
                 curItem.name = line[1:]
@@ -139,7 +141,7 @@ class QifParser(object):
         curItem = Category()
         lines = chunk.splitlines()
         for line in lines:
-            if not len(line) or line[0] == '\n' or line.startswith('!Type'):
+            if not len(line) or line[0] == '\n' or line.startswith(TYPE_HEADER):
                 continue
             elif line[0] == 'E':
                 curItem.expense_category = True
@@ -192,7 +194,7 @@ class QifParser(object):
         lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or \
-                    line.startswith('!Type:Memorized'):
+                    line.startswith(TYPE_HEADER + 'Memorized'):
                 continue
             elif line[0] == 'T':
                 curItem.amount = cls_.parseFloat(line[1:])
@@ -254,7 +256,7 @@ class QifParser(object):
         curItem = Transaction()
         lines = chunk.splitlines()
         for line in lines:
-            if not len(line) or line[0] == '\n' or line.startswith('!Type'):
+            if not len(line) or line[0] == '\n' or line.startswith(TYPE_HEADER):
                 continue
             elif line[0] == 'D':
                 curItem.date = cls_.parseQifDateTime(line[1:])
@@ -326,7 +328,7 @@ class QifParser(object):
         curItem = Investment()
         lines = chunk.splitlines()
         for line in lines:
-            if not len(line) or line[0] == '\n' or line.startswith('!Type'):
+            if not len(line) or line[0] == '\n' or line.startswith(TYPE_HEADER):
                 continue
             elif line[0] == 'D':
                 curItem.date = cls_.parseQifDateTime(line[1:])
