@@ -58,7 +58,7 @@ class QifParser(object):
         for chunk in chunks:
             if not chunk:
                 continue
-            first_line = chunk.split('\n')[0].strip()
+            first_line = chunk.splitlines()[0].strip()
             if first_line == '!Type:Cat':
                 last_type = 'category'
             elif first_line == '!Account':
@@ -105,7 +105,7 @@ class QifParser(object):
         """
         """
         curItem = Class()
-        lines = chunk.split('\n')
+        lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or \
                     line.startswith('!Type:Class'):
@@ -121,7 +121,7 @@ class QifParser(object):
         """
         """
         curItem = Tag()
-        lines = chunk.split('\n')
+        lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or \
                     line.startswith('!Type:Tag'):
@@ -137,7 +137,7 @@ class QifParser(object):
         """
         """
         curItem = Category()
-        lines = chunk.split('\n')
+        lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or line.startswith('!Type'):
                 continue
@@ -163,7 +163,7 @@ class QifParser(object):
         """
         """
         curItem = Account()
-        lines = chunk.split('\n')
+        lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or line.startswith('!Account'):
                 continue
@@ -189,7 +189,7 @@ class QifParser(object):
         """
 
         curItem = MemorizedTransaction()
-        lines = chunk.split('\n')
+        lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or \
                     line.startswith('!Type:Memorized'):
@@ -244,7 +244,7 @@ class QifParser(object):
         """
 
         curItem = Transaction()
-        lines = chunk.split('\n')
+        lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or line.startswith('!Type'):
                 continue
@@ -314,7 +314,7 @@ class QifParser(object):
         """
 
         curItem = Investment()
-        lines = chunk.split('\n')
+        lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or line.startswith('!Type'):
                 continue
