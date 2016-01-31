@@ -102,10 +102,11 @@ class QifParser(object):
     @classmethod
     def parseType(cls_, chunk):
         first_line = chunk.splitlines()[0].strip()
-        if first_line == TYPE_HEADER + 'Cat':
-            return ('category', None)
-        elif first_line == '!Account':
+
+        if first_line == '!Account':
             return ('account', None)
+        elif first_line == TYPE_HEADER + 'Cat':
+            return ('category', None)
         elif first_line in NON_INVST_ACCOUNT_TYPES:
             return ('transaction', first_line)
         elif first_line == TYPE_HEADER + 'Invst':
@@ -116,8 +117,9 @@ class QifParser(object):
             return ('memorized', first_line)
         elif first_line == TYPE_HEADER + 'Tag':
             return ('tag', None)
-        elif chunk.startswith('!'):
-            raise QifParserException('Header not recognized')
+        elif first_line.startswith('!'):
+            raise QifParserException('Section header not recognized: ' +
+                                     first_line)
         else:
             return (None, None)
 
