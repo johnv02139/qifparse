@@ -196,6 +196,8 @@ class QifParser(object):
                 continue
             elif line[0] == 'T':
                 curItem.amount = cls_.parseFloat(line[1:])
+            elif line[0] == 'U':
+                curItem.uamount = cls_.parseFloat(line[1:])
             elif line[0] == 'C':
                 curItem.cleared = line[1:]
             elif line[0] == 'P':
@@ -254,6 +256,8 @@ class QifParser(object):
                 curItem.num = line[1:]
             elif line[0] == 'T':
                 curItem.amount = cls_.parseFloat(line[1:])
+            elif line[0] == 'U':
+                curItem.uamount = cls_.parseFloat(line[1:])
             elif line[0] == 'C':
                 curItem.cleared = line[1:]
             elif line[0] == 'P':
