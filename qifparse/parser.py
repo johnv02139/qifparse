@@ -71,26 +71,13 @@ class QifParser(object):
             'tag': cls_.parseTag,
             'memorized': cls_.parseMemorizedTransaction
         }
-        first_line = chunk.splitlines()[0].strip()
-        if first_line == TYPE_HEADER + 'Cat':
-            last_type = 'category'
-        elif first_line == '!Account':
-            last_type = 'account'
-        elif first_line in NON_INVST_ACCOUNT_TYPES:
-            last_type = 'transaction'
-            transactions_header = first_line
-        elif first_line == TYPE_HEADER + 'Invst':
-            last_type = 'investment'
-            transactions_header = first_line
-        elif first_line == TYPE_HEADER + 'Class':
-            last_type = 'class'
-        elif first_line == TYPE_HEADER + 'Memorized':
-            last_type = 'memorized'
-            transactions_header = first_line
-        elif first_line == TYPE_HEADER + 'Tag':
-            last_type = 'tag'
-        elif chunk.startswith('!'):
-            raise QifParserException('Header not recognized')
+
+        (next_type, new_header) = cls_.parseType(chunk)
+        if next_type:
+            last_type = next_type
+        if new_header:
+            transactions_header = new_header
+
         # if no header is found, we use the previous one
         item = parsers[last_type](chunk)
         if last_type == 'account':
@@ -111,6 +98,28 @@ class QifParser(object):
         elif last_type == 'tag':
             cls_.qif_obj.add_tag(item)
         return (last_type, transactions_header, last_account)
+
+    @classmethod
+    def parseType(cls_, chunk):
+        first_line = chunk.splitlines()[0].strip()
+        if first_line == TYPE_HEADER + 'Cat':
+            return ('category', None)
+        elif first_line == '!Account':
+            return ('account', None)
+        elif first_line in NON_INVST_ACCOUNT_TYPES:
+            return ('transaction', first_line)
+        elif first_line == TYPE_HEADER + 'Invst':
+            return ('investment', first_line)
+        elif first_line == TYPE_HEADER + 'Class':
+            return ('class', None)
+        elif first_line == TYPE_HEADER + 'Memorized':
+            return ('memorized', first_line)
+        elif first_line == TYPE_HEADER + 'Tag':
+            return ('tag', None)
+        elif chunk.startswith('!'):
+            raise QifParserException('Header not recognized')
+        else:
+            return (None, None)
 
     @classmethod
     def parseClass(cls_, chunk):
