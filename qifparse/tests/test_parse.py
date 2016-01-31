@@ -12,12 +12,12 @@ def stripAllLines(txt):
 class TestQIFParsing(unittest.TestCase):
 
     def testParseFile(self):
-        qif = QifParser.parse(open(filename, 'U'))
+        qif = QifParser.parse(open(filename, 'U'), '%d/%m/%Y')
         self.assertTrue(qif)
 
     def testWriteFile(self):
         data = open(filename, 'U').read()
-        qif = QifParser.parse(open(filename, 'U'))
+        qif = QifParser.parse(open(filename, 'U'), '%d/%m/%Y')
         stripped = stripAllLines(data)
 #        out = open('out.qif', 'w')
 #        out.write(str(qif))
@@ -26,7 +26,7 @@ class TestQIFParsing(unittest.TestCase):
 
     def testParseTransactionsFile(self):
         data = open(filename2, 'U').read()
-        qif = QifParser.parse(open(filename2, 'U'))
+        qif = QifParser.parse(open(filename2, 'U'), '%d/%m/%Y')
         stripped = stripAllLines(data)
 #        out = open('out.qif', 'w')
 #        out.write(str(qif))
