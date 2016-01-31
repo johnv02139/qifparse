@@ -23,6 +23,7 @@ NON_INVST_ACCOUNT_TYPES = [
     TYPE_HEADER + 'Oth A',
     TYPE_HEADER + 'Oth L',
     TYPE_HEADER + 'Invoice',  # Quicken for business only
+    TYPE_HEADER + 'CCard',    # Preferred capitalization
 ]
 
 
