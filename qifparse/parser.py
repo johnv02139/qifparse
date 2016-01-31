@@ -101,7 +101,14 @@ class QifParser(object):
 
     @classmethod
     def parseType(cls_, chunk):
-        first_line = chunk.splitlines()[0].strip()
+        lines = chunk.splitlines()
+
+        index = 0
+        first_line = lines[index].strip()
+        while first_line == '!Clear:AutoSwitch' or \
+              first_line == '!Option:AutoSwitch':
+            index += 1
+            first_line = lines[index].strip()
 
         if first_line == '!Account':
             return ('account', None)
