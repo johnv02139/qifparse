@@ -86,8 +86,10 @@ class QifParser(object):
             if last_type == 'account':
                 cls_.qif_obj.add_account(item)
                 last_account = item
-            elif last_type == 'transaction'\
-                    or last_type == 'memorized' or last_type == 'investment':
+            elif last_type == 'memorized':
+                last_account = None
+                cls_.qif_obj.add_transaction(item, header=transactions_header)
+            elif last_type == 'transaction' or last_type == 'investment':
                 if last_account:
                     last_account.add_transaction(item,
                                                  header=transactions_header)

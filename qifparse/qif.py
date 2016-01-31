@@ -127,16 +127,16 @@ class Qif(object):
                 res.append(str(cat))
         for acc in self._accounts:
             res.append(str(acc))
-        if self._classes:
-            res.append('!Type:Class')
-            for cat in self._classes:
-                res.append(str(cat))
         if self._transactions:
             for header in self._transactions.keys():
                 transactions = self._transactions[header]
                 res.append(header)
                 for tr in transactions:
                     res.append(str(tr))
+        if self._classes:
+            res.append('!Type:Class')
+            for cat in self._classes:
+                res.append(str(cat))
         res.append('')
         return '\n'.join(res)
 
