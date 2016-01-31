@@ -59,7 +59,6 @@ class QifParser(object):
                 (last_type, transactions_header, last_account) \
                     = cls_.parseChunk(chunk, last_type,
                                       transactions_header, last_account)
-        return cls_.qif_obj
 
     @classmethod
     def parseChunk(cls_, chunk, last_type, transactions_header, last_account):
@@ -91,9 +90,8 @@ class QifParser(object):
         elif first_line == TYPE_HEADER + 'Tag':
             last_type = 'tag'
         elif chunk.startswith('!'):
-            raise QifParserException('Header not reconized')
-        # if no header is recognized then
-        # we use the previous one
+            raise QifParserException('Header not recognized')
+        # if no header is found, we use the previous one
         item = parsers[last_type](chunk)
         if last_type == 'account':
             cls_.qif_obj.add_account(item)
@@ -103,11 +101,9 @@ class QifParser(object):
             cls_.qif_obj.add_transaction(item, header=transactions_header)
         elif last_type == 'transaction' or last_type == 'investment':
             if last_account:
-                last_account.add_transaction(item,
-                                             header=transactions_header)
+                last_account.add_transaction(item, header=transactions_header)
             else:
-                cls_.qif_obj.add_transaction(item,
-                                             header=transactions_header)
+                cls_.qif_obj.add_transaction(item, header=transactions_header)
         elif last_type == 'category':
             cls_.qif_obj.add_category(item)
         elif last_type == 'class':
