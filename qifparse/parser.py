@@ -45,6 +45,11 @@ class QifParser(object):
             raise QifParserException('Data is empty')
         cls_.date_format = date_format
         cls_.qif_obj = Qif()
+        cls_.parseData(data)
+        return cls_.qif_obj
+
+    @classmethod
+    def parseData(cls_, data):
         chunks = data.split('\n^\n')
         last_type = None
         last_account = None
