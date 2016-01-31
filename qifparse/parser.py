@@ -43,7 +43,7 @@ class QifParser(object):
         if len(data) == 0:
             raise QifParserException('Data is empty')
         cls_.date_format = date_format
-        qif_obj = Qif()
+        cls_.qif_obj = Qif()
         chunks = data.split('\n^\n')
         last_type = None
         last_account = None
@@ -84,7 +84,7 @@ class QifParser(object):
             # we use the previous one
             item = parsers[last_type](chunk)
             if last_type == 'account':
-                qif_obj.add_account(item)
+                cls_.qif_obj.add_account(item)
                 last_account = item
             elif last_type == 'transaction'\
                     or last_type == 'memorized' or last_type == 'investment':
@@ -92,15 +92,15 @@ class QifParser(object):
                     last_account.add_transaction(item,
                                                  header=transactions_header)
                 else:
-                    qif_obj.add_transaction(item,
+                    cls_.qif_obj.add_transaction(item,
                                             header=transactions_header)
             elif last_type == 'category':
-                qif_obj.add_category(item)
+                cls_.qif_obj.add_category(item)
             elif last_type == 'class':
-                qif_obj.add_class(item)
+                cls_.qif_obj.add_class(item)
             elif last_type == 'tag':
-                qif_obj.add_tag(item)
-        return qif_obj
+                cls_.qif_obj.add_tag(item)
+        return cls_.qif_obj
 
     @classmethod
     def parseClass(cls_, chunk):
