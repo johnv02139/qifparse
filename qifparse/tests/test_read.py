@@ -37,7 +37,7 @@ class TestQIFParsing(unittest.TestCase):
         # This seems vaguely wrong to me, and we may want to have the parser
         # exclude the ZZZZZ subcategories.
         fake_subcat = 'ZZZZZ'
-        defined = [x for x in categories if x.name and not x.name.endswith(':' + fake_subcat)]
+        defined = [x for x in categories if not x.name.endswith(':' + fake_subcat)]
         fake = [x for x in categories if x.name.endswith(':' + fake_subcat)]
         self.assertTrue(len(defined) == 13)
         self.assertTrue(len(fake) == 2)
