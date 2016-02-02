@@ -215,7 +215,7 @@ class QifParser(object):
             elif line == '!Clear:AutoSwitch' or line == '!Option:AutoSwitch':
                 pass
             else:
-                print('Line not recognized: ' + line)
+                print('Line of account not recognized: ' + line)
         return curItem
 
     @classmethod
