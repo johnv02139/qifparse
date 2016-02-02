@@ -1,0 +1,193 @@
+!Type:Tag
+NSandwiches
+DMeals eaten between bread
+^
+!Type:Cat
+NSalary
+DSalary Income
+T
+R7360
+I
+^
+NAuto
+DAutomobile Expenses
+E
+^
+NAuto:Gas
+DGas, Diesel
+E
+^
+NAuto:Registration (Non-taxable)
+DAuto Registration
+E
+^
+NAuto:Registration (Taxable)
+DAuto Registration
+T
+R8560
+E
+^
+NAuto:ZZZZZ
+DAutomobile Expenses
+E
+^
+NDining
+DDining Out
+E
+^
+NGroceries
+DGroceries
+E
+^
+NMedical
+DMedical Expense
+T
+R4368
+E
+^
+NTax
+DTaxes
+T
+E
+^
+NTax:Fed
+DFederal Tax
+T
+R7376
+E
+^
+NTax:Medicare
+DMedicare Tax
+T
+R7680
+E
+^
+NTax:Soc Sec
+DSoc Sec Tax
+T
+R7392
+E
+^
+NTax:State
+DState Tax
+T
+R7424
+E
+^
+NTax:ZZZZZ
+DTaxes
+T
+E
+^
+!Option:AutoSwitch
+!Account
+NMy Bank
+TBank
+DPersonal Checking Account
+^
+NCredit Card
+TCCard
+L1,000,000.00
+^
+NFancy Car
+TOth A
+^
+!Clear:AutoSwitch
+!Option:AutoSwitch
+!Account
+NMy Bank
+DPersonal Checking Account
+TBank
+^
+!Type:Bank 
+D3/31/99
+U100,000.00
+T100,000.00
+CX
+POpening Balance
+MThis may be written to the QIF with a comma
+L[My Bank]
+^
+D12/31' 2
+U-20,000.00
+T-20,000.00
+C*
+N104
+PFancy Car Dealer
+LAuto
+^
+D1/15' 3
+U-45.00
+T-45.00
+PSunoco
+LAuto:Gas
+^
+!Account
+NCredit Card
+TCCard
+^
+!Account
+NFancy Car
+TOth A
+^
+!Type:Oth A
+D12/31' 2
+U20,000.00
+T20,000.00
+POpening Balance
+L[Fancy Car]
+^
+!Type:Memorized
+KP
+U-30.00
+T-30.00
+PBig Box Store
+LGroceries
+SGroceries
+Efood to take home
+$-15.00
+SDining/Sandwiches
+Eat the store
+$-10.00
+SAuto
+Etchotchke for car
+$-5.00
+^
+KP
+U-5.00
+T-5.00
+PCiti Cards
+L[My Bank]
+^
+KP
+U-20,000.00
+T-20,000.00
+PFancy Car Dealer
+LAuto
+^
+KD
+U100,000.00
+T100,000.00
+POpening Balance
+MThis may be written to the QIF with a comma
+L[My Bank]
+^
+KD
+U5.00
+T5.00
+PSubway
+MTest of using a tag
+LDining/Sandwiches
+^
+KP
+U-45.00
+T-45.00
+PSunoco
+LAuto:Gas
+A
+A
+A
+A
+A
+A
+^
