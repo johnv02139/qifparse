@@ -34,6 +34,27 @@ class Qif(object):
     def add_account(self, item):
         if not isinstance(item, Account):
             raise RuntimeError(six.u("item not recognized"))
+        existing = self.get_accounts(item.name)
+        if existing:
+            if len(existing) > 1:
+                raise RuntimeError(
+                    six.u("found two accounts with same name: %s" % item.name))
+            orig = existing[0]
+            if orig.is_auto_switch:
+                if item.is_auto_switch:
+                    raise RuntimeError(
+                        six.u("can't merge two auto-switch accounts: %s"
+                              % item.name))
+                else:
+                    # Remove orig from the accounts list; it will be
+                    # "replaced" by the new item
+                    self._accounts = [x for x in self._accounts if x != orig]
+                    # Merge the original item into the new item
+                    item.merge(orig)
+            else:
+                raise RuntimeError(
+                    six.u("can't merge non-auto-switch accounts: %s"
+                          % item.name))
         self._accounts.append(item)
 
     def add_category(self, item):
@@ -325,6 +346,22 @@ class Account(BaseEntry):
 
     def get_transactions(self):
         return tuple(self._transactions)
+
+    def merge(self, orig):
+        for property in orig.__dict__:
+            # Ignore "properties" which are really methods
+            if not callable(orig.__dict__[property]):
+                # Raise an exception if the objects have conflicting
+                # properties; it could be possible to merge them, in
+                # some cases, but we don't expect it to come up
+                if hasattr(self, property) and \
+                   getattr(self, property) and getattr(orig, property) and \
+                   getattr(self, property) != getattr(orig, property):
+                    raise RuntimeError(six.u("can't merge properties"))
+                else:
+                    setattr(self, property, getattr(orig, property))
+
+        return self
 
     def __str__(self):
         res = []

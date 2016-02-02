@@ -44,6 +44,7 @@ class QifParser(object):
         if len(data) == 0:
             raise QifParserException('Data is empty')
         cls_.date_format = date_format
+        cls_.auto_switches = 0
         cls_.qif_obj = Qif()
         cls_.parseData(data)
         return cls_.qif_obj
@@ -108,6 +109,7 @@ class QifParser(object):
         while first_line == '!Clear:AutoSwitch' or \
               first_line == '!Option:AutoSwitch':
             index += 1
+            cls_.auto_switches += 1
             first_line = lines[index].strip()
 
         if first_line == '!Account':
@@ -193,6 +195,7 @@ class QifParser(object):
         """
         """
         curItem = Account()
+        curItem.is_auto_switch = (cls_.auto_switches == 1)
         lines = chunk.splitlines()
         for line in lines:
             if not len(line) or line[0] == '\n' or line.startswith('!Account'):
