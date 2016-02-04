@@ -12,12 +12,13 @@ from qifparse.qif import (
     Class,
     Tag,
     Qif,
+    DEFAULT_ACCOUNT_TYPE,
 )
 
 TYPE_HEADER = '!Type:'
 
 NON_INVST_ACCOUNT_TYPES = [
-    TYPE_HEADER + 'Cash',
+    TYPE_HEADER + DEFAULT_ACCOUNT_TYPE,
     TYPE_HEADER + 'Bank',
     TYPE_HEADER + 'Ccard',
     TYPE_HEADER + 'Oth A',
@@ -26,6 +27,44 @@ NON_INVST_ACCOUNT_TYPES = [
     TYPE_HEADER + 'CCard',    # Preferred capitalization
 ]
 
+def is_obfuscated_account_type (account_type):
+    """Recognize a type that is not written with a documented name.
+
+    Don't know what causes Quicken to generate these lines.  It certainly
+    appears undocumented, to say the least, but Quicken 2008 for Windows
+    seems to emit them often.
+
+    Not sure if this code is good, canonical Python or not.  It says:
+    if the following are true:
+    - the characters in the type name contain at least two irregular
+      characters
+      - where, "irregular" means, outside the ASCII range from '!'
+        through 'z'
+      - in practice, the characters are control characters (<= 26) or
+        tilde
+    then, we assume this is an "obfuscated" type.
+
+    Again, the idea that it's "obfuscated" is a guess, that Intuit
+    decided to hide the type for some reason.  Maybe it's just a bug.
+
+    We don't know what this means, but it seems to only happen in non-
+    investment transaction types, and we will just translate this into
+    "Cash".  Note, this will fail a regression test of the type used in
+    the test_parse test, because when re-writing a type like this, it
+    will be written as "Cash", and not as the strange sequence of
+    characters that was input.
+
+    """
+    return 2 <= len([x for x in account_type if not (33 <= ord(x) <= 125)])
+
+def is_obfuscated_type_header (first_line):
+    """Recognize a type header that is not written with a documented name.
+
+    That means, check that it begins with TYPE_HEADER, and then what follows
+    satisfies the "is_obfuscated_account_type" check
+    """
+    return first_line.startswith(TYPE_HEADER) and \
+        is_obfuscated_account_type(first_line[len(TYPE_HEADER):])
 
 class QifParserException(Exception):
     pass
@@ -124,6 +163,8 @@ class QifParser(object):
             return ('class', None)
         elif first_line == TYPE_HEADER + 'Memorized':
             return ('memorized', first_line)
+        elif is_obfuscated_type_header(first_line):
+            return ('transaction', TYPE_HEADER + DEFAULT_ACCOUNT_TYPE)
         elif first_line == TYPE_HEADER + 'Tag':
             return ('tag', None)
         elif first_line.startswith('!'):
@@ -205,7 +246,11 @@ class QifParser(object):
             elif line[0] == 'D':
                 curItem.description = line[1:]
             elif line[0] == 'T':
-                curItem.account_type = line[1:]
+                account_type = line[1:]
+                if is_obfuscated_account_type(account_type):
+                    curItem.account_type = DEFAULT_ACCOUNT_TYPE
+                else:
+                    curItem.account_type = account_type
             elif line[0] == 'L':
                 curItem.credit_limit = line[1:]
             elif line[0] == '/':

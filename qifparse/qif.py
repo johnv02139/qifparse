@@ -3,8 +3,10 @@ import six
 from datetime import datetime
 from qifparse import DEFAULT_DATETIME_FORMAT
 
+DEFAULT_ACCOUNT_TYPE = 'Cash';
+
 ACCOUNT_TYPES = [
-    'Cash',
+    DEFAULT_ACCOUNT_TYPE,
     'Bank',
     'CCard',
     'Oth A',
@@ -12,6 +14,12 @@ ACCOUNT_TYPES = [
     'Invoice',  # Quicken for business only
     'Invst',
 ]
+
+ACCOUNT_SUBTYPES = {
+    'Port': 'Invst',
+    'Mutual': 'Invst',
+    '401(k)/403(b)': 'Invst',
+}
 
 MEMORIZED_TRANSACTION_TYPES = [
     'C',  # Check
@@ -334,10 +342,17 @@ class Account(BaseEntry):
         self._transactions[header].append(item)
 
     def set_type(self, type):
-        if type and type not in ACCOUNT_TYPES:
-            raise RuntimeError(
-                six.u("%s is not a valid account type" % type))
-        self._type = type
+        if type:
+            if type in ACCOUNT_TYPES:
+                self._type = type
+            elif type in ACCOUNT_SUBTYPES.keys():
+                self.subtype = type
+                self._type = ACCOUNT_SUBTYPES[type]
+            else:
+                raise RuntimeError(six.u("%s is not a valid account type"
+                                         % type))
+        else:
+            self._type = None
 
     def get_type(self):
         return self._type
