@@ -426,11 +426,12 @@ class QifParser(object):
         """
 
         if cls_.date_format:
-            if "' " in qdate:
+            if "'" in qdate:
                 # It's probably necessary that we'll need to modify the
                 # string in some cases, though this particular change is
                 # quick and dirty.  TODO: need to revisit.
                 nice_date = qdate.replace("' ", "/0")
+                nice_date = nice_date.replace("'", "/")
             else:
                 nice_date = qdate
             return datetime.strptime(nice_date, cls_.date_format)
