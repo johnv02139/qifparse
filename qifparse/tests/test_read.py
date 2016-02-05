@@ -7,8 +7,6 @@ from qifparse.parser import QifParser
 
 filename = os.path.join(os.path.dirname(__file__), 'win2008.qif')
 date_format = '%m/%d/%y'
-bank_type = '!Type:Bank'
-mem_type = '!Type:Memorized'
 
 def get_account(qif_obj, name):
     accts = qif_obj.get_accounts(name)
@@ -39,8 +37,8 @@ class TestQIFParsing(unittest.TestCase):
         fake_subcat = 'ZZZZZ'
         defined = [x for x in categories if not x.name.endswith(':' + fake_subcat)]
         fake = [x for x in categories if x.name.endswith(':' + fake_subcat)]
-        self.assertTrue(len(defined) == 13)
-        self.assertTrue(len(fake) == 2)
+        self.assertEqual(len(defined), 13)
+        self.assertEqual(len(fake), 2)
 
         alpha_cats = sorted(defined, key=lambda x: x.name)
 
