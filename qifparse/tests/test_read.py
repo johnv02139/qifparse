@@ -20,7 +20,7 @@ def get_account(qif_obj, name):
 class TestQIFParsing(unittest.TestCase):
 
     def testReadQuickenWin2008File(self):
-        qif = QifParser.parse(open(filename, 'U'), date_format)
+        qif = QifParser.parseFileHandle(open(filename, 'U'), date_format)
 
         self.assertFalse(qif.get_classes())
 

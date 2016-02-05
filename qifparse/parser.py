@@ -75,21 +75,20 @@ class QifParser(object):
     date_format = None
 
     @classmethod
-    def parse(cls_, file_handle, date_format=None):
+    def parseFileHandle(cls_, file_handle, date_format=None):
         if isinstance(file_handle, type('')):
             raise RuntimeError(
                 six.u("parse() takes in a file handle, not a string"))
         data = file_handle.read()
         if len(data) == 0:
             raise QifParserException('Data is empty')
+        return cls_.parseData(data, date_format)
+
+    @classmethod
+    def parseData(cls_, data, date_format=None):
         cls_.date_format = date_format
         cls_.auto_switches = 0
         cls_.qif_obj = Qif()
-        cls_.parseData(data)
-        return cls_.qif_obj
-
-    @classmethod
-    def parseData(cls_, data):
         chunks = data.split('\n^\n')
         last_type = None
         last_account = None
@@ -99,6 +98,7 @@ class QifParser(object):
                 (last_type, transactions_header, last_account) \
                     = cls_.parseChunk(chunk, last_type,
                                       transactions_header, last_account)
+        return cls_.qif_obj
 
     @classmethod
     def parseChunk(cls_, chunk, last_type, transactions_header, last_account):
