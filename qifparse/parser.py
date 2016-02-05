@@ -72,10 +72,17 @@ class QifParserException(Exception):
 
 class QifParser(object):
 
-    date_format = None
+    file_being_parsed = None
 
     @classmethod
-    def parseFileHandle(cls_, file_handle, date_format=None):
+    def parseFile(cls_, filename, date_format=None):
+        cls_.file_being_parsed = filename
+        return cls_.parseFileHandle(open(filename, 'U'), date_format)
+
+    @classmethod
+    def parseFileHandle(cls_, file_handle, date_format):
+        if not cls_.file_being_parsed:
+            cls_.file_being_parsed = 'given file handle'
         if isinstance(file_handle, type('')):
             raise RuntimeError(
                 six.u("parse() takes in a file handle, not a string"))

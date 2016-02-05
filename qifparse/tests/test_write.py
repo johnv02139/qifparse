@@ -15,7 +15,7 @@ class TestQIFParsing(unittest.TestCase):
     # This test simply reads in the file and asserts that an object is created
     # from it, with no exceptions.
     def testParseFile(self):
-        qif = QifParser.parseFileHandle(open(filename, 'U'), '%d/%m/%Y')
+        qif = QifParser.parseFile(filename, '%d/%m/%Y')
         self.assertTrue(qif)
 
     # The "testWrite" tests verify that we can read text from a QIF file, and
@@ -35,7 +35,7 @@ class TestQIFParsing(unittest.TestCase):
     # our output.
     def testWriteFile(self):
         data = open(filename, 'U').read()
-        qif = QifParser.parseFileHandle(open(filename, 'U'), '%d/%m/%Y')
+        qif = QifParser.parseFile(filename, '%d/%m/%Y')
         stripped = stripAllLines(data)
 # If the strings are not equal, it could be useful to use the "diff" tool from
 # the shell to compare them.  The lines below would write out the parsed data to
@@ -48,13 +48,13 @@ class TestQIFParsing(unittest.TestCase):
 
     def testWriteWindowsUsaFile(self):
         data = open(filename3, 'U').read()
-        qif = QifParser.parseFileHandle(open(filename3, 'U'), '%m/%d/%Y')
+        qif = QifParser.parseFile(filename3, '%m/%d/%Y')
         stripped = stripAllLines(data)
         self.assertEquals(stripped, str(qif))
 
     def testWriteTransactionsFile(self):
         data = open(filename2, 'U').read()
-        qif = QifParser.parseFileHandle(open(filename2, 'U'), '%d/%m/%Y')
+        qif = QifParser.parseFile(filename2, '%d/%m/%Y')
         stripped = stripAllLines(data)
         self.assertEquals(stripped, str(qif))
 
